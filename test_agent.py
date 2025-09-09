@@ -16,13 +16,9 @@ for i in gen:
         res = i.data["text"]
         print(ui.blue(res), end="", flush=True)
     elif i.event_type == "response.tool_result.status":
-        print(ui.yellow(
-            f"[Status: {i.data['status']}]: {i.data.get('message', '')}"
-        ))
+        print(ui.yellow(f"[Status: {i.data['status']}]: {i.data.get('message', '')}"))
     elif i.event_type == "response.status":
-        print(ui.yellow(
-            f"[Status: {i.data['status']}]: {i.data.get('message', '')}"
-        ))
+        print(ui.yellow(f"[Status: {i.data['status']}]: {i.data.get('message', '')}"))
     elif i.event_type == "response.thinking.delta":
         res = i.data["text"]
         print(ui.gray(res), end="", flush=True)
