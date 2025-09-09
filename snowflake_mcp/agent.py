@@ -5,12 +5,7 @@ from .config import Config
 
 
 def as_user_message(question: str) -> dict:
-    return {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": question}
-        ]
-    }
+    return {"role": "user", "content": [{"type": "text", "text": question}]}
 
 
 @dataclass
@@ -23,7 +18,7 @@ class Agent:
         url = f"{api_domain}/api/v2/databases/{cfg.database}/schemas/{cfg.schema}/agents/{cfg.agent}:run"
         headers = {
             "Authorization": f"Bearer {cfg.token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         request_body = {
             "messages": [

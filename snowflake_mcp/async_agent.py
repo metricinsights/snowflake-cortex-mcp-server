@@ -5,18 +5,15 @@ from typing import Generator, Dict, Any, Optional
 
 from .config import Config
 
+
 def as_user_message(question: str) -> dict:
-    return {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": question}
-        ]
-    }
+    return {"role": "user", "content": [{"type": "text", "text": question}]}
 
 
 @dataclass
 class StreamEvent:
     """Represents a single event from the SSE stream"""
+
     event_type: str
     data: Dict[str, Any]
     # raw_data: str
@@ -42,7 +39,7 @@ class Agent:
         headers = {
             "Authorization": f"Bearer {cfg.token}",
             "Content-Type": "application/json",
-            "Accept": "text/event-stream"
+            "Accept": "text/event-stream",
         }
         request_body = {
             "messages": [
@@ -51,13 +48,19 @@ class Agent:
         }
 
         # Use streaming request to handle SSE
-        with requests.post(url, headers=headers, json=request_body, stream=True) as response:
+        with requests.post(
+            url, headers=headers, json=request_body, stream=True
+        ) as response:
             response.raise_for_status()
 
-            for event in self._parse_sse_stream(response.iter_lines(decode_unicode=True)):
+            for event in self._parse_sse_stream(
+                response.iter_lines(decode_unicode=True)
+            ):
                 yield event
 
-    def _parse_sse_stream(self, lines: Generator[str, None, None]) -> Generator[StreamEvent, None, None]:
+    def _parse_sse_stream(
+        self, lines: Generator[str, None, None]
+    ) -> Generator[StreamEvent, None, None]:
         """
         Parse Server-Sent Events stream into structured events.
 
@@ -74,11 +77,11 @@ class Agent:
             line = line.strip()
 
             # Skip empty lines and comments
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
             # End of event block
-            if line == '':
+            if line == "":
                 if event_type and event_data:
                     yield self._create_stream_event(event_type, event_data)
                     event_type = None
@@ -86,12 +89,12 @@ class Agent:
                 continue
 
             # Parse event field
-            if line.startswith('event: '):
+            if line.startswith("event: "):
                 event_type = line[7:]
                 continue
 
             # Parse data field
-            if line.startswith('data: '):
+            if line.startswith("data: "):
                 event_data = line[6:]
 
                 # Yield event immediately for each data line
