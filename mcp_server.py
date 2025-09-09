@@ -10,7 +10,6 @@ from config import agent_configs
 from fastmcp import FastMCP, Context
 from microcore import ui
 
-
 setup_logging()
 
 mcp = FastMCP(
@@ -82,7 +81,11 @@ async def ask(agent: str, question: str, ctx: Context) -> str:
             json_serialized_data = json.dumps(
                 dict(
                     data_type="chart",
-                    data=i.data["chart_spec"],
+                    data=(
+                        json.loads(i.data["chart_spec"])
+                        if isinstance(i.data["chart_spec"], str)
+                        else i.data["chart_spec"]
+                    ),
                 ),
                 indent=2,
             )
