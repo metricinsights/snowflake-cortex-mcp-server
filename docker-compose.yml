@@ -1,0 +1,11 @@
+services:
+  snowflake_mcp:
+    container_name: snowflake_mcp
+    image: snowflake_mcp
+    tty: true
+    build:
+      context: .
+    ports:
+      - "8009:8009"
+    volumes:
+      - .:/app
