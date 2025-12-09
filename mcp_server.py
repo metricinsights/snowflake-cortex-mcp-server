@@ -2,12 +2,14 @@ import json
 import logging
 import os
 import textwrap
+from dataclasses import replace
 
 from snowflake_mcp.bootstrap import setup_logging
 from snowflake_mcp.async_agent import Agent
 from config import agent_configs
 
 from fastmcp import FastMCP, Context
+from fastmcp.server.dependencies import get_http_headers
 from microcore import ui
 
 setup_logging()
@@ -24,7 +26,13 @@ mcp = FastMCP(
 async def ask(agent: str, question: str, ctx: Context) -> str:
     if agent not in agent_configs:
         raise ValueError(f"Agent '{agent}' is not available.")
-    result = Agent(config=agent_configs[agent]).ask(question)
+
+    request_headers = get_http_headers()
+
+    agent_config = agent_configs[agent]
+    if token := request_headers.get("token"):
+        agent_config = replace(agent_config, token=token)
+    result = Agent(config=agent_config).ask(question)
     out = ""
     for i in result:
         if i.event_type == "response.text.delta":
